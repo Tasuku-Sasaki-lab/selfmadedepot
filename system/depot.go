@@ -1,18 +1,24 @@
 package system
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/x509"
+	"crypto/rsa"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"os"
 	"time"
+	"path/filepath"
+	"strings"
 )
+
 
 // New SystemDepot returns a new cert depot.
 func NewSystemDepot(path string) (*systemDepot, error) {
