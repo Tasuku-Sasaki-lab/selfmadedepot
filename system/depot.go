@@ -164,7 +164,7 @@ func (d *systemDepot) Serial() (*big.Int, error) {
 	return serial, nil
 }
 
-func Destribute(name string,allowTime int, cert *x509.Certificate) (bool, error) {
+func (d *systemDepot)Destribute(name string,allowTime int, cert *x509.Certificate) (bool, error) {
 	values := Values{Name: name, AllowTime: allowTime, SerialNumber: cert.SerialNumber, NotBefore: cert.NotBefore.String(), NotAfter: cert.NotAfter.String(), Pem: string(pemCert(cert.Raw))}
 	values_json, err := json.Marshal(values)
 	if err != nil {
