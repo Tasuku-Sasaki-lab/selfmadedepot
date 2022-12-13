@@ -1,4 +1,4 @@
-module github.com/Tasuku-Sasaki-lab/selfmadebolt
+module github.com/Tasuku-Sasaki-lab/selfmadedepot
 
 go 1.17
 
