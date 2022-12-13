@@ -23,7 +23,7 @@ type systemDepot struct {
 	dirPath string
 }
 
-func (d *fileDepot) CA(pass []byte) ([]*x509.Certificate, *rsa.PrivateKey, error) {
+func (d *systemDepot) CA(pass []byte) ([]*x509.Certificate, *rsa.PrivateKey, error) {
 	caPEM, err := d.getFile("ca.pem")
 	if err != nil {
 		return nil, nil, err
@@ -128,7 +128,7 @@ type Values struct {
 }
 
 //serial 作成　ここ変える このままでもいいんちゃう？
-func (d *fileDepot) Serial() (*big.Int, error) {
+func (d *systemDepot) Serial() (*big.Int, error) {
 	name := d.path("serial")
 	s := big.NewInt(2)
 	if err := d.check("serial"); err != nil {
