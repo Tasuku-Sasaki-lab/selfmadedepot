@@ -3,8 +3,8 @@ package system
 import (
 	"bufio"
 	"bytes"
-	"crypto/x509"
 	"crypto/rsa"
+	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
@@ -14,11 +14,10 @@ import (
 	"math/big"
 	"net/http"
 	"os"
-	"time"
 	"path/filepath"
 	"strings"
+	"time"
 )
-
 
 // New SystemDepot returns a new cert depot.
 func NewSystemDepot(path string) (*systemDepot, error) {
@@ -81,7 +80,7 @@ func (d *systemDepot) path(name string) string {
 
 const (
 	rsaPrivateKeyPEMBlockType = "RSA PRIVATE KEY"
-	certificatePEMBlockType = "CERTIFICATE"
+	certificatePEMBlockType   = "CERTIFICATE"
 )
 
 func pemCert(derBytes []byte) []byte {
@@ -133,6 +132,31 @@ type Values struct {
 	Pem          string
 }
 
+// file permissions
+const (
+	serialPerm = 0400
+)
+
+func (d *systemDepot) writeSerial(serial *big.Int) error {
+	if err := os.MkdirAll(d.dirPath, 0755); err != nil {
+		return err
+	}
+	name := d.path("serial")
+	os.Remove(name)
+
+	file, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, serialPerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err := file.WriteString(fmt.Sprintf("%x\n", serial.Bytes())); err != nil {
+		os.Remove(name)
+		return err
+	}
+	return nil
+}
+
 //serial 作成　ここ変える このままでもいいんちゃう？
 func (d *systemDepot) Serial() (*big.Int, error) {
 	name := d.path("serial")
@@ -164,7 +188,7 @@ func (d *systemDepot) Serial() (*big.Int, error) {
 	return serial, nil
 }
 
-func (d *systemDepot)Destribute(name string,allowTime int, cert *x509.Certificate) (bool, error) {
+func (d *systemDepot) Destribute(name string, allowTime int, cert *x509.Certificate) (bool, error) {
 	values := Values{Name: name, AllowTime: allowTime, SerialNumber: cert.SerialNumber, NotBefore: cert.NotBefore.String(), NotAfter: cert.NotAfter.String(), Pem: string(pemCert(cert.Raw))}
 	values_json, err := json.Marshal(values)
 	if err != nil {
@@ -199,10 +223,3 @@ func (d *systemDepot)Destribute(name string,allowTime int, cert *x509.Certificat
 	fmt.Print("\n")
 	return false, errors.New(string(body))
 }
-
-
-
-
-
-
-
