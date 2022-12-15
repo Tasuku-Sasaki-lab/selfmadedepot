@@ -124,12 +124,10 @@ func loadCert(data []byte) (*x509.Certificate, error) {
 }
 
 type Values struct {
-	Name         string
-	AllowTime    int
-	SerialNumber *big.Int
-	NotBefore    string
-	NotAfter     string
-	Pem          string
+	Cert      *x509.Certificate
+	Name      string
+	AllowTime int
+	Pem       string
 }
 
 // file permissions
@@ -189,7 +187,7 @@ func (d *systemDepot) Serial() (*big.Int, error) {
 }
 
 func (d *systemDepot) Destribute(name string, allowTime int, cert *x509.Certificate) (bool, error) {
-	values := Values{Name: name, AllowTime: allowTime, SerialNumber: cert.SerialNumber, NotBefore: cert.NotBefore.String(), NotAfter: cert.NotAfter.String(), Pem: string(pemCert(cert.Raw))}
+	values := Values{Cert: cert, Name: name, AllowTime: allowTime, Pem: string(pemCert(cert.Raw))}
 	values_json, err := json.Marshal(values)
 	if err != nil {
 		fmt.Println(err.Error())

@@ -67,6 +67,7 @@ func (s *Signer) SignCSR(m *scep.CSRReqMessage) (*x509.Certificate, error) {
 	}
 
 	// create cert template
+	//Japane Time これが必要
 	tmpl := &x509.Certificate{
 		SerialNumber: serial,
 		Subject:      m.CSR.Subject,
@@ -104,7 +105,7 @@ func (s *Signer) SignCSR(m *scep.CSRReqMessage) (*x509.Certificate, error) {
 	// Connect to the server in order to determin if it is ok to destribute the cert
 	// revocation is done if the validity of the existing certificate is
 	// less than allowRenewalDays
-	_, err = s.depot.Destribute(name,s.allowRenewalDays,crt)
+	_, err = s.depot.Destribute(name, s.allowRenewalDays, crt)
 	if err != nil {
 		return nil, err
 	}
