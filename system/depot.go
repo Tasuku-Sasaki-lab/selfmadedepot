@@ -15,9 +15,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"rand"
 	"strings"
 	"time"
-	"rand"
 )
 
 // New SystemDepot returns a new cert depot.
@@ -196,8 +196,6 @@ func (d *systemDepot) Serial() (*big.Int, error) {
 	}
 	return serial, nil
 }
-
-func 
 
 func (d *systemDepot) Destribute(name string, allowTime int, cert *x509.Certificate) (bool, error) {
 	values := Values{Cert: cert, Name: name, AllowTime: allowTime, Pem: string(pemCert(cert.Raw))}
