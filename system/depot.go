@@ -3,6 +3,7 @@ package system
 import (
 	"bufio"
 	"bytes"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
@@ -12,7 +13,6 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
-	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -159,10 +159,8 @@ func (d *systemDepot) writeSerial(serial *big.Int) error {
 //serial 作成　ここ変える このままでもいいんちゃう？ // ここランダムにする
 func (d *systemDepot) Serial() (*big.Int, error) {
 	//Max random value, a 130-bits integer, i.e 2^130 - 1
-	max := new(big.Int)
-	max.Exp(big.NewInt(2), big.NewInt(130), nil).Sub(max, big.NewInt(1))
-
-	//Generate cryptographically strong pseudo-random between 0 - max
+	var max *big.Int = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(130), nil)
+	// Generate cryptographically strong pseudo-random between [0, max)
 	n, err := rand.Int(rand.Reader, max)
 	if err != nil {
 		return nil, err
