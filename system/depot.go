@@ -12,10 +12,10 @@ import (
 	"io"
 	"io/ioutil"
 	"math/big"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
-	"rand"
 	"strings"
 	"time"
 )
