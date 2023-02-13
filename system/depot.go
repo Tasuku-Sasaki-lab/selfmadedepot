@@ -161,13 +161,13 @@ func (d *systemDepot) Serial() (*big.Int, error) {
 	//Max random value, a 130-bits integer, i.e 2^130 - 1
 	var max *big.Int = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(130), nil)
 	// Generate cryptographically strong pseudo-random between [0, max)
-	n, err := rand.Int(rand.Reader, max)
+	s, err := rand.Int(rand.Reader, max)
 	if err != nil {
 		return nil, err
 	}
 	// この2をランダムにすればいいのか？　checkに引っ掛からなかった場合を整理しよう
 	name := d.path("serial")
-	s := big.NewInt(n)
+	//s := big.NewInt(n)
 	if err := d.check("serial"); err != nil {
 		// assuming it doesnt exist, create
 		if err := d.writeSerial(s); err != nil {
