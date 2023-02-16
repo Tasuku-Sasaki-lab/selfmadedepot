@@ -1,7 +1,6 @@
 package system
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
@@ -10,13 +9,11 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"math/big"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -158,41 +155,44 @@ func (d *systemDepot) writeSerial(serial *big.Int) error {
 
 //serial 作成　ここ変える このままでもいいんちゃう？ // ここランダムにする
 func (d *systemDepot) Serial() (*big.Int, error) {
-	//Max random value, a 130-bits integer, i.e 2^130 - 1
-	var max *big.Int = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(130), nil)
+	//Max random value, a 130-bits integer, i.e 2^64 - 1
+	var max *big.Int = big.NewInt(0).Exp(big.NewInt(2), big.NewInt(64), nil)
 	// Generate cryptographically strong pseudo-random between [0, max)
 	s, err := rand.Int(rand.Reader, max)
 	if err != nil {
 		return nil, err
 	}
-	// この2をランダムにすればいいのか？　checkに引っ掛からなかった場合を整理しよう
-	name := d.path("serial")
-	//s := big.NewInt(n)
-	if err := d.check("serial"); err != nil {
-		// assuming it doesnt exist, create
-		if err := d.writeSerial(s); err != nil {
+	return s, nil
+	/*
+		// この2をランダムにすればいいのか？　checkに引っ掛からなかった場合を整理しよう
+		name := d.path("serial")
+		//s := big.NewInt(n)
+		if err := d.check("serial"); err != nil {
+			// assuming it doesnt exist, create
+			if err := d.writeSerial(s); err != nil {
+				return nil, err
+			}
+			return s, nil
+		}
+		file, err := os.Open(name)
+		if err != nil {
 			return nil, err
 		}
-		return s, nil
-	}
-	file, err := os.Open(name)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-	r := bufio.NewReader(file)
-	data, err := r.ReadString('\r')
-	if err != nil && err != io.EOF {
-		return nil, err
-	}
-	data = strings.TrimSuffix(data, "\r")
-	data = strings.TrimSuffix(data, "\n")
-	//
-	serial, ok := s.SetString(data, 16)
-	if !ok {
-		return nil, errors.New("could not convert " + string(data) + " to serial number")
-	}
-	return serial, nil
+		defer file.Close()
+		r := bufio.NewReader(file)
+		data, err := r.ReadString('\r')
+		if err != nil && err != io.EOF {
+			return nil, err
+		}
+		data = strings.TrimSuffix(data, "\r")
+		data = strings.TrimSuffix(data, "\n")
+		//
+		serial, ok := s.SetString(data, 16)
+		if !ok {
+			return nil, errors.New("could not convert " + string(data) + " to serial number")
+		}
+		return serial, nil
+	*/
 }
 
 func (d *systemDepot) Destribute(name string, allowTime int, cert *x509.Certificate) (bool, error) {
